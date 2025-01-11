@@ -80,7 +80,7 @@ export const TaskInput = styled.input`
   border-radius: 3px;
 
   &:focus {
-    outline: 2px solid #2563eb;
+    outline: 2px solid #ff9800;
     outline-offset: -2px;
   }
 `;
