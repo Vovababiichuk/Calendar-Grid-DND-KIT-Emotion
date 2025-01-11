@@ -46,12 +46,13 @@ import TaskModal from './TaskModal';
 
 const DeleteZone = styled.div<{ isVisible: boolean; isOver: boolean }>`
   position: fixed;
+  height: 50px;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   background: ${props => (props.isOver ? '#ef4444' : '#fee2e2')};
   color: ${props => (props.isOver ? 'white' : '#ef4444')};
-  padding: 12px 24px;
+  padding: 12px 24px 12px 30px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -62,7 +63,6 @@ const DeleteZone = styled.div<{ isVisible: boolean; isOver: boolean }>`
   box-shadow:
     0 4px 6px -1px rgb(0 0 0 / 0.1),
     0 2px 4px -2px rgb(0 0 0 / 0.1);
-  z-index: 1000;
 
   &:hover {
     background: #ef4444;
@@ -85,8 +85,8 @@ function DeleteDropZone({ isVisible }: { isVisible: boolean }) {
 
   return (
     <DeleteZone ref={setNodeRef} isVisible={isVisible} isOver={isOver}>
-      <Trash2 size={18} />
-      <DeleteText>Drop here to delete</DeleteText>
+      <Trash2 className="absolute top-4 left-2 z-10" size={18} />
+      <DeleteText>Drop here to delete task</DeleteText>
     </DeleteZone>
   );
 }

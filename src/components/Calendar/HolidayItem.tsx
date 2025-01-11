@@ -3,6 +3,7 @@ import React from 'react';
 import { Holiday } from '../../types';
 
 const HolidayContainer = styled.div`
+  display: inline-block;
   padding: 2px 4px;
   background: #f1f5f9;
   border-radius: 2px;

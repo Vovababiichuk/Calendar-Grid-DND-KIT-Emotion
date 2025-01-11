@@ -6,8 +6,8 @@ export const TaskContainer = styled.div<{ isDragging?: boolean }>`
   box-shadow: ${props =>
     props.isDragging ? '0 5px 15px rgba(0, 0, 0, 0.15)' : '0 1px 0 rgba(9, 30, 66, 0.25)'};
   margin-bottom: 4px;
+  cursor: pointer;
   position: relative;
-  cursor: grab;
   display: flex;
   align-items: stretch;
   transform: ${props => (props.isDragging ? 'rotate(-2deg)' : 'none')};
@@ -49,12 +49,11 @@ export const TaskContent = styled.div`
   word-break: break-word;
 `;
 
-export const DragHandle = styled.div`
+export const DragHandle = styled.div<{ isDragging: boolean }>`
   display: flex;
   align-items: center;
   padding: 0 2px;
   color: #ff9800;
-  cursor: grab;
   opacity: 0;
   transition: opacity 0.2s;
   margin-top: 2px;
@@ -66,6 +65,8 @@ export const DragHandle = styled.div`
   &:hover {
     background-color: #fffae3ff;
   }
+
+  cursor: ${({ isDragging }) => (isDragging ? 'grabbing' : 'grab')};
 `;
 
 export const TaskInput = styled.input`

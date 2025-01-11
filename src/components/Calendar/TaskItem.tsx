@@ -30,7 +30,6 @@ const TaskItem = ({ task, onEdit, isDragging = false }: TaskItemProps) => {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    cursor: isDragging ? 'grabbing' : 'grab',
   };
 
   useEffect(() => {
@@ -67,7 +66,7 @@ const TaskItem = ({ task, onEdit, isDragging = false }: TaskItemProps) => {
 
   return (
     <TaskContainer ref={setNodeRef} style={style} {...attributes} isDragging={isDragging}>
-      <DragHandle {...listeners}>
+      <DragHandle {...listeners} isDragging={isDragging}>
         <GripVertical size={14} />
       </DragHandle>
       <ColorStrips>

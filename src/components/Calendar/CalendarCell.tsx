@@ -2,6 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import styled from '@emotion/styled';
 import { format } from 'date-fns';
+import { isSameDay, startOfToday } from 'date-fns';
 import { Holiday, Task } from '../../types';
 import HolidayItem from './HolidayItem';
 import TaskItem from './TaskItem';
@@ -33,6 +34,15 @@ const DateLabel = styled.div<{ isCurrentMonth: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const Day = styled.span<{ isToday: boolean }>`
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: ${props => (props.isToday ? 'white' : '#94a3b8')};
+  background-color: ${props => (props.isToday ? '#ffab2c' : 'transparent')};
+  border-radius: 50%;
+  padding: 4px 8px;
 `;
 
 const TaskCount = styled.span`
@@ -92,30 +102,32 @@ const CalendarCell = ({
   holidays,
   onDateClick,
   onEditTask,
-  onReorderTasks,
+  // onReorderTasks,
 }: CalendarCellProps) => {
   const { setNodeRef } = useDroppable({
     id: format(date, 'yyyy-MM-dd'),
   });
 
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
+  const isToday = isSameDay(date, startOfToday());
 
-    if (active.id !== over.id) {
-      const oldIndex = tasks.findIndex(task => task.id === active.id);
-      const newIndex = tasks.findIndex(task => task.id === over.id);
+  // const handleDragEnd = (event: any) => {
+  //   const { active, over } = event;
 
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newTasks = arrayMove(tasks, oldIndex, newIndex);
-        onReorderTasks(newTasks);
-      }
-    }
-  };
+  //   if (active.id !== over.id) {
+  //     const oldIndex = tasks.findIndex(task => task.id === active.id);
+  //     const newIndex = tasks.findIndex(task => task.id === over.id);
+
+  //     if (oldIndex !== -1 && newIndex !== -1) {
+  //       const newTasks = arrayMove(tasks, oldIndex, newIndex);
+  //       onReorderTasks(newTasks);
+  //     }
+  //   }
+  // };
 
   return (
     <Cell isCurrentMonth={isCurrentMonth} onClick={onDateClick}>
       <DateLabel isCurrentMonth={isCurrentMonth}>
-        {format(date, 'd')}
+        <Day isToday={isToday}>{format(date, 'd')}</Day>
         {tasks.length > 0 && (
           <TaskCount>
             {tasks.length} card{tasks.length !== 1 && 's'}
