@@ -2,9 +2,13 @@ import {
   closestCenter,
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
+  useDroppable,
 } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import styled from '@emotion/styled';
 import {
   addMonths,
   eachDayOfInterval,
@@ -17,12 +21,12 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useTaskManagement } from '../../hooks/useTaskManagement';
-import { Holiday } from '../../types';
-import { Task } from '../../types';
+import { Holiday, Task } from '../../types';
 import { fetchHolidays } from '../../utils/api';
+import { getHolidaysForDate, getTasksForDate } from '../../utils/dateUtils';
 import CalendarCell from './CalendarCell';
 import SearchBar from './SearchBar';
 import {
@@ -40,15 +44,61 @@ import {
 import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
 
-const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DeleteZone = styled.div<{ isVisible: boolean; isOver: boolean }>`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: ${props => (props.isOver ? '#ef4444' : '#fee2e2')};
+  color: ${props => (props.isOver ? 'white' : '#ef4444')};
+  padding: 12px 24px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: ${props => (props.isVisible ? 1 : 0)};
+  pointer-events: ${props => (props.isVisible ? 'auto' : 'none')};
+  transition: all 0.2s ease-in-out;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  z-index: 1000;
 
-const Calendar = () => {
+  &:hover {
+    background: #ef4444;
+    color: white;
+  }
+`;
+
+const DeleteText = styled.span`
+  font-size: 0.875rem;
+  font-weight: 500;
+`;
+
+const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DELETE_ZONE_ID = 'delete-zone';
+
+function DeleteDropZone({ isVisible }: { isVisible: boolean }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: DELETE_ZONE_ID,
+  });
+
+  return (
+    <DeleteZone ref={setNodeRef} isVisible={isVisible} isOver={isOver}>
+      <Trash2 size={18} />
+      <DeleteText>Drop here to delete</DeleteText>
+    </DeleteZone>
+  );
+}
+
+const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(startOfToday());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [view, setView] = useState<'month' | 'week'>('month');
   const [searchTerm, setSearchTerm] = useState('');
-  const [draggingTask, setDraggingTask] = useState<Task | null>(null);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     tasks,
@@ -56,7 +106,7 @@ const Calendar = () => {
     setSelectedTask,
     handleCreateTask,
     handleUpdateTask,
-    handleEditTask,
+    handleEditTask: handleTaskEdit,
     setTasks,
   } = useTaskManagement();
 
@@ -69,7 +119,7 @@ const Calendar = () => {
     loadHolidays();
   }, [currentDate]);
 
-  const days = useMemo(() => {
+  const days = React.useMemo(() => {
     const start =
       view === 'week' ? startOfWeek(currentDate) : startOfWeek(startOfMonth(currentDate));
     const end = view === 'week' ? endOfWeek(currentDate) : endOfWeek(endOfMonth(currentDate));
@@ -77,69 +127,75 @@ const Calendar = () => {
     return eachDayOfInterval({ start, end });
   }, [currentDate, view]);
 
-  const filteredTasks = useMemo(() => {
+  const filteredTasks = React.useMemo(() => {
     if (!searchTerm) return tasks;
     return tasks.filter(task => task.title.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [tasks, searchTerm]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    const taskId = event.active.id as string;
-    const task = tasks.find(t => t.id === taskId);
-    if (task) setDraggingTask(task);
-  };
-
-  const handleDragEndForDate = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const taskId = active.id as string;
-    const date = new Date(over.id as string);
-    setTasks(prevTasks => {
-      const taskIndex = prevTasks.findIndex(task => task.id === taskId);
-      if (taskIndex === -1) return prevTasks;
-
-      const newTasks = [...prevTasks];
-      newTasks[taskIndex] = {
-        ...newTasks[taskIndex],
-        date,
-      };
-
-      return newTasks;
-    });
-  };
-
-  const handleDragEndForReordering = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    setTasks(prevTasks => {
-      const oldIndex = prevTasks.findIndex(task => task.id === active.id);
-      const newIndex = prevTasks.findIndex(task => task.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const updatedTasks = [...prevTasks];
-        const [movedTask] = updatedTasks.splice(oldIndex, 1);
-        updatedTasks.splice(newIndex, 0, movedTask);
-        return updatedTasks;
-      }
-
-      return prevTasks;
-    });
+    const { active } = event;
+    const task = tasks.find(t => t.id === active.id);
+    if (task) {
+      setActiveTask(task);
+      setIsDragging(true);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { over } = event;
+    const { active, over } = event;
 
-    if (!over) return;
+    if (over?.id === DELETE_ZONE_ID) {
+      // Delete the task
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== active.id));
+    } else if (over) {
+      const taskId = active.id as string;
+      const overId = over.id as string;
 
-    // Перевіряємо, чи `over.id` є датою у форматі 'yyyy-MM-dd'
-    const isDate = /^\d{4}-\d{2}-\d{2}$/.test(String(over.id));
+      // Check if this is a reorder within the same date
+      const activeTask = tasks.find(t => t.id === taskId);
+      const overTask = tasks.find(t => t.id === overId);
 
-    if (isDate) {
-      handleDragEndForDate(event);
-    } else {
-      handleDragEndForReordering(event);
+      if (
+        activeTask &&
+        overTask &&
+        format(activeTask.date, 'yyyy-MM-dd') === format(overTask.date, 'yyyy-MM-dd')
+      ) {
+        const oldIndex = tasks.findIndex(t => t.id === taskId);
+        const newIndex = tasks.findIndex(t => t.id === overId);
+
+        setTasks(prevTasks => arrayMove(prevTasks, oldIndex, newIndex));
+      } else {
+        // This is a move to a different date
+        const date = new Date(overId);
+        setTasks(prevTasks => {
+          const taskIndex = prevTasks.findIndex(t => t.id === taskId);
+          if (taskIndex === -1) return prevTasks;
+
+          const newTasks = [...prevTasks];
+          newTasks[taskIndex] = {
+            ...newTasks[taskIndex],
+            date,
+          };
+
+          return newTasks;
+        });
+      }
     }
+
+    setActiveTask(null);
+    setIsDragging(false);
+  };
+
+  const handleTaskClick = (date: Date, task?: Task) => {
+    setSelectedDate(date);
+    setSelectedTask(task);
+  };
+
+  const handleReorderTasks = (newTasks: Task[]) => {
+    setTasks(prevTasks => {
+      const otherTasks = prevTasks.filter(task => !newTasks.find(t => t.id === task.id));
+      return [...otherTasks, ...newTasks];
+    });
   };
 
   const goToToday = () => setCurrentDate(startOfToday());
@@ -171,8 +227,8 @@ const Calendar = () => {
 
       <DndContext
         collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
       >
         <Grid isWeekView={view === 'week'}>
           {weekdays.map(day => (
@@ -183,21 +239,23 @@ const Calendar = () => {
               key={format(day, 'yyyy-MM-dd')}
               date={day}
               isCurrentMonth={isSameMonth(day, currentDate)}
-              tasks={filteredTasks.filter(
-                task => format(task.date, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'),
-              )}
-              holidays={holidays.filter(holiday => holiday.date === format(day, 'yyyy-MM-dd'))}
-              onDateClick={() => {
-                setSelectedDate(day);
-                setSelectedTask(undefined);
+              tasks={getTasksForDate(day, filteredTasks)}
+              holidays={getHolidaysForDate(day, holidays)}
+              onDateClick={() => handleTaskClick(day)}
+              onEditTask={(taskId, newTitle) => {
+                setTasks(prevTasks =>
+                  prevTasks.map(task => (task.id === taskId ? { ...task, title: newTitle } : task)),
+                );
               }}
-              onEditTask={handleEditTask}
+              onReorderTasks={handleReorderTasks}
             />
           ))}
         </Grid>
 
+        <DeleteDropZone isVisible={isDragging} />
+
         <DragOverlay>
-          {draggingTask ? <TaskItem task={draggingTask} onEdit={() => {}} /> : null}
+          {activeTask ? <TaskItem task={activeTask} onEdit={() => {}} isDragging /> : null}
         </DragOverlay>
       </DndContext>
 

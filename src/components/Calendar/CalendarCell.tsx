@@ -1,16 +1,15 @@
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import styled from '@emotion/styled';
 import { format } from 'date-fns';
 import { Holiday, Task } from '../../types';
 import HolidayItem from './HolidayItem';
-import { SortableItem } from './SortableItem';
 import TaskItem from './TaskItem';
 
 const Cell = styled.div<{ isCurrentMonth: boolean }>`
   background: ${props => (props.isCurrentMonth ? '#f8fafc' : '#f1f5f9')};
-  min-height: 120px;
-  height: 120px;
+  min-height: 150px;
+  height: 150px;
   padding: 8px;
   position: relative;
   border-right: 1px solid #e2e8f0;
@@ -82,7 +81,8 @@ interface CalendarCellProps {
   tasks: Task[];
   holidays: Holiday[];
   onDateClick: () => void;
-  onEditTask: (task: Task) => void;
+  onEditTask: (taskId: string, newTitle: string) => void;
+  onReorderTasks: (tasks: Task[]) => void;
 }
 
 const CalendarCell = ({
@@ -92,10 +92,25 @@ const CalendarCell = ({
   holidays,
   onDateClick,
   onEditTask,
+  onReorderTasks,
 }: CalendarCellProps) => {
   const { setNodeRef } = useDroppable({
     id: format(date, 'yyyy-MM-dd'),
   });
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = tasks.findIndex(task => task.id === active.id);
+      const newIndex = tasks.findIndex(task => task.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newTasks = arrayMove(tasks, oldIndex, newIndex);
+        onReorderTasks(newTasks);
+      }
+    }
+  };
 
   return (
     <Cell isCurrentMonth={isCurrentMonth} onClick={onDateClick}>
@@ -110,19 +125,16 @@ const CalendarCell = ({
       <ContentContainer>
         <HolidayList>
           {holidays.map(holiday => (
-            <HolidayItem key={holiday.name} holiday={holiday} />
+            <HolidayItem key={`${holiday.date}-${holiday.name}`} holiday={holiday} />
           ))}
         </HolidayList>
         <TaskList ref={setNodeRef}>
           <SortableContext
             items={tasks.map(task => task.id)}
             strategy={verticalListSortingStrategy}
-            id={format(date, 'yyyy-MM-dd')}
           >
             {tasks.map(task => (
-              <SortableItem key={task.id} id={task.id}>
-                <TaskItem task={task} onEdit={() => onEditTask(task)} />
-              </SortableItem>
+              <TaskItem key={task.id} task={task} onEdit={onEditTask} />
             ))}
           </SortableContext>
         </TaskList>
