@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import { Holiday } from '../types';
+import { Holiday } from '../types/types';
 
 export const formatDate = (date: Date): string => {
   try {

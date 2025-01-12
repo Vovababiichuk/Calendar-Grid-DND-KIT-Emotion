@@ -3,14 +3,14 @@ import styled from '@emotion/styled';
 export const TaskContainer = styled.div<{ isDragging?: boolean }>`
   background: white;
   border-radius: 3px;
-  box-shadow: ${props =>
-    props.isDragging ? '0 5px 15px rgba(0, 0, 0, 0.15)' : '0 1px 0 rgba(9, 30, 66, 0.25)'};
+  box-shadow: ${({ isDragging }) =>
+    isDragging ? '0 5px 15px rgba(0, 0, 0, 0.15)' : '0 1px 0 rgba(9, 30, 66, 0.25)'};
   margin-bottom: 4px;
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: stretch;
-  transform: ${props => (props.isDragging ? 'rotate(-2deg)' : 'none')};
+  transform: ${({ isDragging }) => (isDragging ? 'rotate(-2deg)' : 'none')};
 
   &:hover {
     background: #f8f9fa;
@@ -34,7 +34,7 @@ export const ColorStrips = styled.div`
 
 export const ColorStrip = styled.div<{ color: string }>`
   flex: 1;
-  background: ${props => props.color};
+  background: ${({ color }) => color};
 `;
 
 export const TaskContent = styled.div`
@@ -45,7 +45,9 @@ export const TaskContent = styled.div`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.4;
+  max-height: calc(1.65em * 3);
   word-break: break-word;
 `;
 

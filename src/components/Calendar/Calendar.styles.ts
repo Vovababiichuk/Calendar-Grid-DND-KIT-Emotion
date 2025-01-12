@@ -50,7 +50,7 @@ export const ViewControls = styled.div`
 `;
 
 export const ViewButton = styled.button<{ active: boolean }>`
-  background: ${props => (props.active ? 'rgba(255, 255, 255, 0.2)' : 'transparent')};
+  background: ${({ active }) => (active ? 'rgba(255, 255, 255, 0.2)' : 'transparent')};
   border: none;
   color: white;
   padding: 4px 12px;

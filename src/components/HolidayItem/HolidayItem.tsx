@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
-import React from 'react';
-import { Holiday } from '../../types';
+import { Holiday } from '../../types/types';
 
 const HolidayContainer = styled.div`
   display: inline-block;
@@ -23,7 +22,7 @@ interface HolidayItemProps {
   holiday: Holiday;
 }
 
-const HolidayItem: React.FC<HolidayItemProps> = ({ holiday }) => {
+const HolidayItem = ({ holiday }: HolidayItemProps) => {
   return <HolidayContainer title={holiday.name}>{holiday.name}</HolidayContainer>;
 };
 

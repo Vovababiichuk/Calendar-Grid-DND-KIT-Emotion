@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Pencil } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Task } from '../../types';
+import { Task } from '../../types/types';
 import {
   ColorStrip,
   ColorStrips,
@@ -11,7 +11,7 @@ import {
   TaskContainer,
   TaskContent,
   TaskInput,
-} from './styles/task';
+} from './TaskItem.styles';
 
 interface TaskItemProps {
   task: Task;

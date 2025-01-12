@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Task } from '../types';
+import { Task } from '../types/types';
 
 export const useTaskManagement = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -18,11 +18,7 @@ export const useTaskManagement = () => {
 
   const handleUpdateTask = (taskId: string, title: string, colors: string[]) => {
     setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, title, colors }
-          : task
-      )
+      prevTasks.map(task => (task.id === taskId ? { ...task, title, colors } : task)),
     );
     setSelectedTask(undefined);
   };

@@ -2,12 +2,11 @@ import {
   closestCenter,
   DndContext,
   DragEndEvent,
-  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   useDroppable,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove } from '@dnd-kit/sortable';
 import styled from '@emotion/styled';
 import {
   addMonths,
@@ -24,11 +23,13 @@ import {
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTaskManagement } from '../../hooks/useTaskManagement';
-import { Holiday, Task } from '../../types';
-import { fetchHolidays } from '../../utils/api';
+import { fetchHolidays } from '../../gateway/api.ts';
+import { Holiday, Task } from '../../types/types.ts';
 import { getHolidaysForDate, getTasksForDate } from '../../utils/dateUtils';
-import CalendarCell from './CalendarCell';
-import SearchBar from './SearchBar';
+import CalendarCell from '../CalendarCell/CalendarCell';
+import SearchBar from '../SearchBar/SearchBar';
+import TaskItem from '../TaskItem/TaskItem';
+import TaskModal from '../TaskModal/TaskModal';
 import {
   CalendarContainer,
   Grid,
@@ -40,9 +41,7 @@ import {
   ViewButton,
   ViewControls,
   WeekdayHeader,
-} from './styles';
-import TaskItem from './TaskItem';
-import TaskModal from './TaskModal';
+} from './Calendar.styles.ts';
 
 const DeleteZone = styled.div<{ isVisible: boolean; isOver: boolean }>`
   position: fixed;
