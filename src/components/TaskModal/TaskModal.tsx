@@ -1,3 +1,4 @@
+import confetti from 'canvas-confetti';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -50,6 +51,7 @@ const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModa
         toast.success('Task created successfully! 🎉', {
           position: 'top-center',
         });
+        confetti({ particleCount: 200, spread: 120, origin: { y: 1 } });
         onCreateTask(title.trim(), selectedColors);
       }
       onClose();
