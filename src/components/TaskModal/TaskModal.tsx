@@ -1,12 +1,14 @@
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { Task } from '../../types/types';
 import {
   Button,
   CloseButton,
   ColorOption,
   ColorPicker,
+  ErrorMessage,
   Form,
   Header,
   Input,
@@ -28,6 +30,7 @@ const colors = ['#4CAF50', '#2196F3', '#9C27B0', '#F44336', '#FF9800', '#607D8B'
 const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModalProps) => {
   const [title, setTitle] = useState('');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (task) {
@@ -44,9 +47,17 @@ const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModa
       if (task && onUpdateTask) {
         onUpdateTask(task.id, title.trim(), selectedColors);
       } else {
+        toast.success('Task created successfully! 🎉', {
+          position: 'top-center',
+        });
         onCreateTask(title.trim(), selectedColors);
       }
       onClose();
+    } else {
+      toast.error('Field cannot be empty! 🛑', {
+        position: 'top-center',
+      });
+      setError('Task title is required!');
     }
   };
 
@@ -79,6 +90,7 @@ const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModa
               onChange={e => setTitle(e.target.value)}
               autoFocus
             />
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <ColorPicker>
               {colors.map(color => (
                 <ColorOption

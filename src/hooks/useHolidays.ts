@@ -1,4 +1,3 @@
-// hooks/useHolidays.ts
 import { useEffect, useState } from 'react';
 import { fetchHolidays } from '../gateway/api';
 

@@ -103,3 +103,9 @@ export const Button = styled.button`
     background: #1d4ed8;
   }
 `;
+
+export const ErrorMessage = styled.div`
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+`;

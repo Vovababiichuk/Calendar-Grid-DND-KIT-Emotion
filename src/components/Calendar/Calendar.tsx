@@ -21,7 +21,8 @@ import {
   subMonths,
 } from 'date-fns';
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
 import { useTaskManagement } from '../../hooks/useTaskManagement';
 import { fetchHolidays } from '../../gateway/api.ts';
 import { Holiday, Task } from '../../types/types.ts';
@@ -90,7 +91,7 @@ function DeleteDropZone({ isVisible }: { isVisible: boolean }) {
   );
 }
 
-const Calendar: React.FC = () => {
+const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(startOfToday());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -118,7 +119,7 @@ const Calendar: React.FC = () => {
     loadHolidays();
   }, [currentDate]);
 
-  const days = React.useMemo(() => {
+  const days = useMemo(() => {
     const start =
       view === 'week' ? startOfWeek(currentDate) : startOfWeek(startOfMonth(currentDate));
     const end = view === 'week' ? endOfWeek(currentDate) : endOfWeek(endOfMonth(currentDate));
@@ -126,7 +127,7 @@ const Calendar: React.FC = () => {
     return eachDayOfInterval({ start, end });
   }, [currentDate, view]);
 
-  const filteredTasks = React.useMemo(() => {
+  const filteredTasks = useMemo(() => {
     if (!searchTerm) return tasks;
     return tasks.filter(task => task.title.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [tasks, searchTerm]);
@@ -270,6 +271,7 @@ const Calendar: React.FC = () => {
           onUpdateTask={handleUpdateTask}
         />
       )}
+      <ToastContainer />
     </CalendarContainer>
   );
 };

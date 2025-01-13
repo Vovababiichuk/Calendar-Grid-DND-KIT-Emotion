@@ -2,6 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Pencil } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { Task } from '../../types/types';
 import {
   ColorStrip,
@@ -56,6 +57,9 @@ const TaskItem = ({ task, onEdit, isDragging = false }: TaskItemProps) => {
     const trimmedValue = editValue.trim();
     if (trimmedValue && trimmedValue !== task.title) {
       onEdit(task.id, trimmedValue);
+      toast.success('Task edited successfully! 🎉', {
+        position: 'top-center',
+      });
     }
     setIsEditing(false);
   };
