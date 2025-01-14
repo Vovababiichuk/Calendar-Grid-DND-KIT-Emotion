@@ -2,8 +2,8 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { format } from 'date-fns';
 import { isSameDay, startOfToday } from 'date-fns';
-import { Holiday, Task } from '../../types/types';
-import { DATE_FORMAT } from '../../utils/constants';
+import { Holiday, Task } from '@/types/types';
+import { DATE_FORMAT } from '@/utils/constants';
 import HolidayItem from '../HolidayItem/HolidayItem';
 import TaskItem from '../TaskItem/TaskItem';
 import {

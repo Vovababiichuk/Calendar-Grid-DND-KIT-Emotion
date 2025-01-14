@@ -3,8 +3,8 @@ import { format } from 'date-fns';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Task } from '../../types/types';
-import { AVAILABLE_COLORS } from '../../utils/constants';
+import { Task } from '@/types/types';
+import { AVAILABLE_COLORS } from '@/utils/constants';
 import {
   Button,
   CloseButton,

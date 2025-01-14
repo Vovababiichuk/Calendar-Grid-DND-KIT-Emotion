@@ -14,11 +14,11 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { useDragAndDrop } from '../../hooks/useDragAndDrop.ts';
-import { useTaskManagement } from '../../hooks/useTaskManagement';
-import { fetchHolidays } from '../../gateway/api.ts';
-import { Holiday, Task } from '../../types/types.ts';
-import { DATE_FORMAT, WEEK_DAYS } from '../../utils/constants';
+import { fetchHolidays } from '@/gateway/api.ts';
+import { Holiday, Task } from '@/types/types.ts';
+import { DATE_FORMAT, WEEK_DAYS } from '@/utils/constants';
+import { useDragAndDrop } from '@/hooks/useDragAndDrop.ts';
+import { useTaskManagement } from '@/hooks/useTaskManagement';
 import { getHolidaysForDate, getTasksForDate } from '../../utils/dateUtils';
 import CalendarCell from '../CalendarCell/CalendarCell';
 import DeleteDropZone from '../DeleteZone/DeleteZone.tsx';

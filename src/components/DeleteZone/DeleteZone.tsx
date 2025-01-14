@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core';
 import styled from '@emotion/styled';
 import { Trash2 } from 'lucide-react';
-import { DELETE_ZONE_ID } from '../../utils/constants';
+import { DELETE_ZONE_ID } from '@/utils/constants';
 
 const DeleteZone = styled.div<{ isVisible: boolean; isOver: boolean }>`
   position: fixed;

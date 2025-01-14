@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Pencil } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Task } from '../../types/types';
+import { Task } from '@/types/types';
 import {
   ColorStrip,
   ColorStrips,

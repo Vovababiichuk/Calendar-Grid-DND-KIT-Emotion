@@ -1,5 +1,5 @@
 import { format, isSameMonth } from 'date-fns';
-import { Holiday, Task } from '../../types/types';
+import { Holiday, Task } from '@/types/types';
 import { DATE_FORMAT, WEEK_DAYS } from '../../utils/constants';
 import { getHolidaysForDate, getTasksForDate } from '../../utils/dateUtils';
 import { Grid, WeekdayHeader } from '../Calendar/Calendar.styles';

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Holiday } from '../../types/types';
+import { Holiday } from '@/types/types';
 
 const HolidayContainer = styled.div`
   display: inline-block;
