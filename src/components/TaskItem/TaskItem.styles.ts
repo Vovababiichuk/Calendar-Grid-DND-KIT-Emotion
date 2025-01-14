@@ -49,6 +49,15 @@ export const TaskContent = styled.div`
   line-height: 1.4;
   max-height: calc(1.65em * 3);
   word-break: break-word;
+  transition:
+    max-height 0.3s ease,
+    -webkit-line-clamp 0.3s ease;
+
+  ${TaskContainer}:hover & {
+    -webkit-line-clamp: unset;
+    max-height: none;
+    overflow: visible;
+  }
 `;
 
 export const DragHandle = styled.div<{ isDragging: boolean }>`

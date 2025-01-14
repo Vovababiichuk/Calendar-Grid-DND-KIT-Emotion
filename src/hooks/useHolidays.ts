@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { fetchHolidays } from '../gateway/api';
+import { Holiday } from '../types/types';
 
-export const useHolidays = (currentDate: Date) => {
-  const [holidays, setHolidays] = useState([]);
+export const useHolidays = (year: number) => {
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+
   useEffect(() => {
     const loadHolidays = async () => {
-      const year = currentDate.getFullYear();
       const data = await fetchHolidays(year, 'US');
       setHolidays(data);
     };
     loadHolidays();
-  }, [currentDate]);
+  }, [year]);
 
-  return { holidays };
+  return holidays;
 };

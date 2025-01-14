@@ -1,9 +1,10 @@
 import confetti from 'canvas-confetti';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Task } from '../../types/types';
+import { AVAILABLE_COLORS } from '../../utils/constants';
 import {
   Button,
   CloseButton,
@@ -26,8 +27,6 @@ interface TaskModalProps {
   onUpdateTask?: (taskId: string, title: string, colors: string[]) => void;
 }
 
-const colors = ['#4CAF50', '#2196F3', '#9C27B0', '#F44336', '#FF9800', '#607D8B'];
-
 const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModalProps) => {
   const [title, setTitle] = useState('');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -38,7 +37,7 @@ const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModa
       setTitle(task.title);
       setSelectedColors(task.colors);
     } else {
-      setSelectedColors([colors[0]]);
+      setSelectedColors([AVAILABLE_COLORS[0]]);
     }
   }, [task]);
 
@@ -94,7 +93,7 @@ const TaskModal = ({ date, task, onClose, onCreateTask, onUpdateTask }: TaskModa
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <ColorPicker>
-              {colors.map(color => (
+              {AVAILABLE_COLORS.map(color => (
                 <ColorOption
                   key={color}
                   color={color}

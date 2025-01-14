@@ -3,6 +3,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { format } from 'date-fns';
 import { isSameDay, startOfToday } from 'date-fns';
 import { Holiday, Task } from '../../types/types';
+import { DATE_FORMAT } from '../../utils/constants';
 import HolidayItem from '../HolidayItem/HolidayItem';
 import TaskItem from '../TaskItem/TaskItem';
 import {
@@ -34,7 +35,7 @@ const CalendarCell = ({
   onEditTask,
 }: CalendarCellProps) => {
   const { setNodeRef } = useDroppable({
-    id: format(date, 'yyyy-MM-dd'),
+    id: format(date, DATE_FORMAT),
   });
 
   const isToday = isSameDay(date, startOfToday());

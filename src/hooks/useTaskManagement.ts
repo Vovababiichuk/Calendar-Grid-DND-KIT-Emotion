@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Task } from '../types/types';
 
 export const useTaskManagement = () => {
@@ -7,7 +8,7 @@ export const useTaskManagement = () => {
 
   const handleCreateTask = (title: string, colors: string[], date: Date) => {
     const newTask: Task = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: uuidv4(),
       title,
       date,
       order: tasks.length,
