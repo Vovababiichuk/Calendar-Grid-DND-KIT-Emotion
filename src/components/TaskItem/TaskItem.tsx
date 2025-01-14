@@ -68,6 +68,10 @@ const TaskItem = ({ task, onEdit, isDragging = false }: TaskItemProps) => {
     handleSubmit();
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(e.target.value);
+  };
+
   return (
     <TaskContainer ref={setNodeRef} style={style} {...attributes} isDragging={isDragging}>
       <DragHandle {...listeners} isDragging={isDragging}>
@@ -82,7 +86,7 @@ const TaskItem = ({ task, onEdit, isDragging = false }: TaskItemProps) => {
         <TaskInput
           ref={inputRef}
           value={editValue}
-          onChange={e => setEditValue(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           onClick={e => e.stopPropagation()}
